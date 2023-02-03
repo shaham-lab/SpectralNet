@@ -1,11 +1,955 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+<!DOCTYPE html>
+<html lang="" xml:lang="" xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+    SpectralNet: Spectral Clustering Using Deep Neural Networks
+  </title>
+  <meta content="SpectralNet: Spectral Clustering Using Deep Neural Networks" property="og:title"/>
+  <meta content="https://shaham-lab.github.io/SpectralNet/" property="og:url"/>
+  <style type="text/css">
+   :root {
+    --small-thumb-border-radius: 2px;
+    --larger-thumb-border-radius: 3px;
+}
+
+html {
+  font-size: 14px;
+  line-height: 1.6;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media(min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.base-grid,
+.n-header,
+.n-byline,
+.n-title,
+.n-article,
+.n-footer {
+    display: grid;
+    justify-items: stretch;
+    grid-template-columns: [screen-start] 8px [page-start kicker-start text-start gutter-start middle-start] 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr [text-end page-end gutter-end kicker-end middle-end] 8px [screen-end];
+    grid-column-gap: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-column-gap: 8px;
+}
+
+@media(min-width: 768px) {
+    .base-grid,
+    .n-header,
+    .n-byline,
+    .n-title,
+    .n-article,
+    .n-footer {
+        display: grid;
+        justify-items: stretch;
+        grid-template-columns: [screen-start] 1fr [page-start kicker-start middle-start text-start] 45px 45px 45px 45px 45px 45px 45px 45px [ kicker-end text-end gutter-start] 45px [middle-end] 45px [page-end gutter-end] 1fr [screen-end];
+        grid-column-gap: 16px;
+    }
+
+    .grid {
+        grid-column-gap: 16px;
+    }
+}
+
+@media(min-width: 1000px) {
+    .base-grid,
+    .n-header,
+    .n-byline,
+    .n-title,
+    .n-article,
+    .n-footer {
+        display: grid;
+        justify-items: stretch;
+        grid-template-columns: [screen-start] 1fr [page-start kicker-start] 50px [middle-start] 50px [text-start kicker-end] 50px 50px 50px 50px 50px 50px 50px 50px [text-end gutter-start] 50px [middle-end] 50px [page-end gutter-end] 1fr [screen-end];
+        grid-column-gap: 16px;
+    }
+
+    .grid {
+        grid-column-gap: 16px;
+    }
+}
+
+@media (min-width: 1180px) {
+    .base-grid,
+    .n-header,
+    .n-byline,
+    .n-title,
+    .n-article,
+    .n-footer {
+        display: grid;
+        justify-items: stretch;
+        grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
+        grid-column-gap: 32px;
+    }
+    .grid {
+        grid-column-gap: 32px;
+    }
+
+}
+
+.base-grid {
+  grid-column: screen;
+}
+
+/* default grid column assignments */
+.n-title > *  {
+  grid-column: text;
+}
+
+.n-article > *  {
+  grid-column: text;
+}
+
+.n-header {
+    height: 0px;
+}
+
+.n-footer {
+    height: 60px;
+}
+
+.n-title {
+    padding: 4rem 0 1.5rem;
+}
+
+.l-page {
+    grid-column: page;
+}
+
+.l-article {
+    grid-column: text;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+.pixelated {
+    image-rendering: pixelated;
+}
+
+strong {
+    font-weight: 600;
+}
+
+/*------------------------------------------------------------------*/
+/* title */
+.n-title h1 {
+    font-family: "Barlow",system-ui,Arial,sans-serif;
+    color:#082333;
+    grid-column: text;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.1em;
+    margin: 0 0 0.5rem;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .n-title h1 {
+        font-size: 50px;
+    }
+}
+
+/*------------------------------------------------------------------*/
+/* article */
+.n-article {
+    color: rgb(33, 40, 53);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 2rem;
+}
+
+.n-article h2 {
+    contain: layout style;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.25em;
+    margin: 2rem 0 1.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .n-article {
+        line-height: 1.7;
+    }
+
+    .n-article h2 {
+        font-size: 36px;
+    }
+}
+
+/*------------------------------------------------------------------*/
+/* byline */
+
+.n-byline {
+  contain: style;
+  overflow: hidden;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 0.8rem;
+  line-height: 1.8em;
+  padding: 1.5rem 0;
+  min-height: 1.8em;
+}
+
+.n-byline .byline {
+  grid-column: text;
+}
+
+.byline {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.grid {
+    display: grid;
+    grid-column-gap: 8px;
+}
+
+@media (min-width: 768px) {
+.grid {
+    grid-column-gap: 16px;
+}
+}
+
+.n-byline p {
+  margin: 0;
+}
+
+.n-byline h3 {
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.5);
+    margin: 0;
+    text-transform: uppercase;
+}
+.n-byline .authors-affiliations {
+  grid-column-end: span 2;
+  grid-template-columns: 1fr 1fr;
+}
+
+/*------------------------------------------------------------------*/
+/* figures */
+.figure {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+figcaption, .figcaption {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+    line-height: 1.5em;
+}
+
+ul.authors {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+ul.authors li {
+    padding: 0 0.5rem;
+    display: inline-block;
+}
+
+ul.authors sup {
+    color: rgb(126,126,126);
+}
+
+ul.authors.affiliations  {
+    margin-top: 0.5rem;
+}
+
+ul.authors.affiliations li {
+    color: rgb(126,126,126);
+}
+
+/* Download section columns.  This switches between two layouts::after
+
+- two columns on larger viewport sizes: side-by-side paper thumb and links
+- single column: no thumb
+ */
+.download-section {
+    display: grid;
+    grid-template-areas: "links";
+}
+.download-section h4 {
+    margin-left: 2.5rem;
+    display: block;
+}
+.download-thumb {
+    grid-area: thumb;
+    display: none;
+}
+.download-links {
+    grid-area: links;
+}
+img.dropshadow {
+    box-shadow: 0 1px 10px rgba(0,0,0, 0.3);
+}
+
+@media(min-width: 1180px) {
+    .download-section {
+        display: grid;
+        grid-template-areas: "thumb links";
+    }
+    .download-thumb {
+        display: block;
+    }
+}
+
+/* For BibTeX */
+pre {
+    font-size: 0.9em;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-radius: 3px;
+    background-color: rgb(235, 235, 235);
+    overflow-x: auto;
+}
+
+/* video caption */
+
+.video {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.videocaption {
+    display: flex;
+    font-size: 16px;
+    line-height: 1.5em;
+    margin-bottom: 1rem;
+    justify-content: center;
+}
+   .disable-selection {
+         user-select: none;
+    -moz-user-select: none; /* Firefox */
+     -ms-user-select: none; /* Internet Explorer */
+  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+ -webkit-user-select: none; /* Chrome, Safari, and Opera */
+ -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+}
+
+.hidden {
+    display: none;
+}
+
+h3.figtitle {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.fig-title-line {
+    grid-template-columns: 2fr 0.75fr;
+}
+
+.fig-thumb-image-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+}
+
+.fig-thumb-image-row-item {
+    width: 100%;
+    min-height: auto;
+    border-radius: var(--small-thumb-border-radius);
+}
+
+.fig-dataset-button {
+    border-color: rgba(0,0,0,0);
+    border-width: 1px;
+    border-style: solid;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.fig-dataset-button.active {
+    border-color: rgba(0,0,0,0.7);
+    border-width: 1px;
+    border-style: solid;
+    opacity: 1.0;
+}
+
+.grid {
+    display: grid;
+    grid-column-gap: 8px;
+}
+
+.fig-3-image-row {
+    margin-top: 1em;
+    grid-template-columns: 1fr 1.3fr 1fr;
+    grid-template-rows: 1fr;
+}
+
+.fig-3-image-item {
+    justify-self: center;
+    align-self: center;
+    width: 100%;
+    border-radius: var(--larger-thumb-border-radius);
+}
+
+/*---------------------------------------------------------------------*/
+.fig-slider {
+    grid-template-columns: auto 2fr;
+    grid-template-rows: 1fr;
+    margin-top: 1em;
+    align-items: start;
+    justify-content: center;
+}
+
+.fig-slider img.play_button {
+    margin-right: 8px;
+    cursor: pointer;
+    justify-self: center;
+}
+.fig-slider svg {
+    touch-action: none;
+}
+
+.fig-preload {
+    display: none;
+}
+/*---------------------------------------------------------------------*/
+  </style>
+  <!-- inline stylesheet files into the above <style> element -->
+  <link href="https://fonts.googleapis.com/css?family=Montserrat|Segoe+UI" rel="stylesheet"/>
+<!--  <link as="image" href="https://nvlabs-fi-cdn.nvidia.com/_web/stylegan3/img/paper-pdf-512.png" rel="preload"/>-->
+<!--  <link as="image" href="https://nvlabs-fi-cdn.nvidia.com/_web/stylegan3/img/stylegan3-teaser-1920x1006.png" rel="preload"/>-->
+ </head>
+ <body>
+  <div class="n-header">
+  </div>
+  <div class="n-title">
+   <h1>
+    Discovery of Single Independent Latent Variable
+   </h1>
+  </div>
+  <div class="n-byline">
+   <div class="byline">
+    <ul class="authors">
+     <li>
+      Uri Shaham
+      <sup>
+       1
+      </sup>
+     </li>
+     <li>
+      Jonathan Svirsky
+      <sup>
+       1
+      </sup>
+     </li>
+     <li>
+      Ori Katz
+      <sup>
+       2
+      </sup>
+     </li>
+     <li>
+      Ronen Talmon
+      <sup>
+       2
+      </sup>
+     </li>
+    </ul>
+    <ul class="authors affiliations">
+     <li>
+      <sup>
+       1
+      </sup>
+      Bar-Ilan University
+     </li>
+     <li>
+      <sup>
+       2
+      </sup>
+      Technion
+     </li>
+    </ul>
+   </div>
+  </div>
+  <div class="n-article">
+   <div class="l-article">
+    <img src="scheme.jpg" width="80%"/>
+   </div>
+   <h2 id="abstract">
+    Abstract
+   </h2>
+   <p>
+    Latent variable discovery is a central problem in data analysis with a broad range of applications in applied science. In this work, we consider data given as an invertible mixture of two statistically independent components, and assume that one of the components is observed while the other is hidden. Our goal is to recover the hidden component. For this purpose, we propose an autoencoder equipped with a discriminator. Unlike the standard nonlinear ICA problem, which was shown to be non-identifiable, in the special case of ICA we consider here, we show that our approach can recover the component of interest up to entropy-preserving transformation. We demonstrate the performance of the proposed approach in  several tasks, including image synthesis, voice cloning, and fetal ECG extraction.
+   </p>
+   <h2 id="links">
+    Links
+   </h2>
+   <div class="grid download-section">
+    <div class="download-thumb">
+     <a href="#">
+      <img class="dropshadow" src="paper.jpg" width="300"/>
+     </a>
+    </div>
+    <div class="download-links">
+     <ul>
+      <li>
+       <a href="#">
+        Paper PDF
+       </a>
+      </li>
+      <li>
+       <a href="https://arxiv.org/pdf/2110.05887.pdf">
+        arXiv
+       </a>
+      </li>
+      <li>
+       <a href="https://github.com/shaham-labs/disilv">
+        Code release on GitHub
+       </a>
+      </li>
+     </ul>
+    </div>
+   </div>
+   <h2 id="audios">
+    Audio Samples
+   </h2>
+   <p> We present a set of the conversions generated by our method when converting seen speakers i.e. found in our method training data.
+    For each conversion we display the source sample from the seen speaker, a sample recorded by the target speaker and finally the generated sample by applying the Voice Conversion.
+  </p>
+   <div>
+    <h3> Conversions </h3>
+    <table border="1" class="inlineTable">
+        <col width="300">
+        <col width="300">
+        <col width="300">
+        <col width="300">
+        <col width="300">
+        <col width="300">
+
+        <tr>
+            <th>Source Speaker ID</th>
+            <th>Target Speaker ID</th>
+            <th>Source Sample</th>
+            <th>Target Speaker Example Sample</th>
+            <th>Converted Sample</th>
+        </tr>
+
+
+        <tr>
+            <th>p250</th>
+            <th>p231</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p250_412.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p231_274.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p250_412_to_p231.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p227</th>
+            <th>p231</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p227_366.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p231_290.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p227_366_to_p231.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p227</th>
+            <th>p231</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p227_269.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p231_065.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p227_269_to_p231.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p225</th>
+            <th>p241</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p225_285.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p241_160.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p225_285_to_p241.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p229</th>
+            <th>p241</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p229_110.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p241_282.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p229_110_to_p241.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p245</th>
+            <th>p241</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p245_185.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p241_278.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p245_185_to_p241.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p228</th>
+            <th>p245</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p228_301.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p245_267.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p228_301_to_p245.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p241</th>
+            <th>p245</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p241_203.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p245_128.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p241_203_to_p245.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p233</th>
+            <th>p245</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p233_258.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p245_353.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p233_258_to_p245.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p232</th>
+            <th>p248</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p232_055.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p248_228.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p232_055_to_p248.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p253</th>
+            <th>p248</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p253_360.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p248_280.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p253_360_to_p248.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <th>p228</th>
+            <th>p248</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p228_247.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p248_170.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p228_247_to_p248.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+        <tr>
+            <th>p255</th>
+            <th>p240</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p255_200.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p240_141.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p255_200_to_p240.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+        <tr>
+            <th>p255</th>
+            <th>p245</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p255_060.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p245_074.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p255_060_to_p245.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+        <tr>
+            <th>p254</th>
+            <th>p229</th>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p254_069.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/p229_362.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+            <td>
+                <audio controls style="width: 200px;">
+                    <source src=samples/test_p254_069_to_p229.wav type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </td>
+
+        </tr>
+
+    </table>
+</div>
+
+   <h2 id="citation">
+    Citation
+   </h2>
+   <pre><code>@inproceedings{shaham2022,
+  author = {Uri Shaham and Jonathan Svirsky and Ori Katz and Ronen Talmon},
+  title = {Discovery of Single Independent Latent Variable},
+  booktitle = {Proc. NeurIPS},
+  year = {2022}
+}</code></pre>
+   <h2 id="license">
+    License
+   </h2>
+   <p>
+    <a href="https://en.wikipedia.org/wiki/MIT_License">MIT License</a>.
+     Feel free to use any of the material in your own work, as long as you give us appropriate credit by mentioning the title and author list of our paper.
+   </p>
+   <h2 id="acknowledgments">
+    Acknowledgments
+   </h2>
+   <p>
+    We thank Neurips 2022 reviewers assigned to our paper for their helpful comments and discussions.
+   </p>
+  </div>
+  <div class="n-footer">
+  </div>
+ </body>
 </html>

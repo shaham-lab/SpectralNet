@@ -8,3 +8,4 @@ src/weights
 *.csv
 *.ann
 src/wandb
+.DS_Store
