@@ -219,18 +219,11 @@ class SpectralTrainer:
                         X = self.siamese_net.forward_once(X)
 
                 W = self._get_affinity_matrix(X)
-                # L = get_laplacian(W)
-                # V = get_eigenvectors(L)[:, 0:2]
-                # y = y.detach().cpu().numpy()
-                # plot_sorted_laplacian(W, y)
 
                 loss = self.criterion(W, Y)
                 valid_loss += loss.item()
         
         self.counter += 1
-
-        # if self.counter % 10 == 0:
-        #     plot_laplacian_eigenvectors(Y,y)
 
         valid_loss /= len(valid_loader)
         return valid_loss

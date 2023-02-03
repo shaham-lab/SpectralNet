@@ -72,10 +72,6 @@ class ContrastiveLoss(nn.Module):
         Returns:
             torch.Tensor: loss value
         """
-
-        # euclidean_distance = F.pairwise_distance(output1, output2)
-        # loss = torch.mean((1-label) * torch.pow(euclidean_distance, 2) + 
-        #                   (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
         
         euclidean = nn.functional.pairwise_distance(output1, output2)
         positive_distance = torch.pow(euclidean, 2)
