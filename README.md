@@ -104,19 +104,16 @@ If you want to use your own dataset, you should provide a json config file that 
 
 ```
 
-The label file is optional and may not be provided. <br><br>
-Parameters:<br>
-`should_use_ae` - Whether you want to use the AE network as part of the training process.<br>
-`should_use_siamese` - Whether you want to use the Siamese network as part of the training process. <br>
-`should_check_generalization` -  Whether you want to check how good the network can generalize new samples (Out-of-sample-extention). <br>
-`n_neighbors` (in the siamese config) - Threshold where, for all k <= siam_k closest neighbors to x_i, (x_i, k) is considered a 'positive' pair by siamese net<br>
-`use_approx` - In case you have a large dataset you may want to compute the nearest neighbors with Annoy instead of KNN. <br>
-`scale_k`- Scale for the computation of the Gaussian-kernel affinity matrix. <br>
-`is_local_scale` - Global scale of local scale. <br>
+**The label path is not mandatory and you can provide unlabeled dataset as well.** <br><br>
 
-## OS & Hardware
+### Flags and parameters:<br>
+`should_use_ae` - Whether you want to use the AE network as part of the training process.<br><br>
+`should_use_siamese` - Whether you want to use the Siamese network as part of the training process. <br><br>
+`should_check_generalization` -  Whether you want to check how good the network can generalize new samples (Out-of-sample-extention). <br><br>
+`use_approx` - In case you have a large dataset you may want to compute the nearest neighbors with Annoy instead of KNN. <br><br>
+`n_neighbors` (in the siamese config) - Threshold where, for all k <= siam_k closest neighbors to x_i, (x_i, k) is considered a 'positive' pair by siamese net<br><br>
+`n_neighbors` (in the spectral config) - number of nonzero entries (neighbors) to use for graph Laplacian affinity matrix<br><br>
 
-The code has been tested on the following hardare and OS: <br>
+`scale_k`- Neighbor used to determine scale of gaussian graph Laplacian; calculated by taking median distance of the (scale_nbr)th neighbor, over a set of size batch_size sampled from the datset <br><br>
+`is_local_scale` - Global scale or local scale. <br><br>
 
-1. Linux CentOS 7.9.2009, GeForce GTX 1080 Ti
-2. macOS Monterey (12.15.1), M1 processor
