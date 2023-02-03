@@ -87,3 +87,4 @@ def main():
 if __name__ == "__main__":
     embeddings, assignments = main()
     write_assignmets_to_file(assignments)
+    print("Your assignments were saved to the file 'cluster_assignments.csv!")

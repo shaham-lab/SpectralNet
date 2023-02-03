@@ -229,8 +229,8 @@ class SpectralTrainer:
         
         self.counter += 1
 
-        if self.counter % 10 == 0:
-            plot_laplacian_eigenvectors(Y,y)
+        # if self.counter % 10 == 0:
+        #     plot_laplacian_eigenvectors(Y,y)
 
         valid_loss /= len(valid_loader)
         return valid_loss
