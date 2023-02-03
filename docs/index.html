@@ -1,559 +1,601 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="" xmlns="http://www.w3.org/1999/xhtml">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>
-    SpectralNet: Spectral Clustering Using Deep Neural Networks
-  </title>
-  <!-- <meta content="SpectralNet: Spectral Clustering Using Deep Neural Networks" property="og:title"/> -->
-  <!-- <meta content="https://shaham-lab.github.io/SpectralNet/" property="og:url"/> -->
-  <style type="text/css">
-   :root {
-    --small-thumb-border-radius: 2px;
-    --larger-thumb-border-radius: 3px;
-}
 
-html {
-  font-size: 14px;
-  line-height: 1.6;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-}
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>
+        SpectralNet: Spectral Clustering Using Deep Neural Networks
+    </title>
+    <!-- <meta content="SpectralNet: Spectral Clustering Using Deep Neural Networks" property="og:title"/> -->
+    <!-- <meta content="https://shaham-lab.github.io/SpectralNet/" property="og:url"/> -->
+    <style type="text/css">
+        :root {
+            --small-thumb-border-radius: 2px;
+            --larger-thumb-border-radius: 3px;
+        }
 
-@media(min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
+        html {
+            font-size: 14px;
+            line-height: 1.6;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            -webkit-text-size-adjust: 100%;
+        }
 
-body {
-    margin: 0px;
-    padding: 0px;
-}
+        @media(min-width: 768px) {
+            html {
+                font-size: 16px;
+            }
+        }
 
-.base-grid,
-.n-header,
-.n-byline,
-.n-title,
-.n-article,
-.n-footer {
-    display: grid;
-    justify-items: stretch;
-    grid-template-columns: [screen-start] 8px [page-start kicker-start text-start gutter-start middle-start] 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr [text-end page-end gutter-end kicker-end middle-end] 8px [screen-end];
-    grid-column-gap: 8px;
-}
+        body {
+            margin: 0px;
+            padding: 0px;
+        }
 
-.grid {
-  display: grid;
-  grid-column-gap: 8px;
-}
+        .base-grid,
+        .n-header,
+        .n-byline,
+        .n-title,
+        .n-article,
+        .n-footer {
+            display: grid;
+            justify-items: stretch;
+            grid-template-columns: [screen-start] 8px [page-start kicker-start text-start gutter-start middle-start] 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr [text-end page-end gutter-end kicker-end middle-end] 8px [screen-end];
+            grid-column-gap: 8px;
+        }
 
-@media(min-width: 768px) {
-    .base-grid,
-    .n-header,
-    .n-byline,
-    .n-title,
-    .n-article,
-    .n-footer {
-        display: grid;
-        justify-items: stretch;
-        grid-template-columns: [screen-start] 1fr [page-start kicker-start middle-start text-start] 45px 45px 45px 45px 45px 45px 45px 45px [ kicker-end text-end gutter-start] 45px [middle-end] 45px [page-end gutter-end] 1fr [screen-end];
-        grid-column-gap: 16px;
-    }
+        .grid {
+            display: grid;
+            grid-column-gap: 8px;
+        }
 
-    .grid {
-        grid-column-gap: 16px;
-    }
-}
+        @media(min-width: 768px) {
 
-@media(min-width: 1000px) {
-    .base-grid,
-    .n-header,
-    .n-byline,
-    .n-title,
-    .n-article,
-    .n-footer {
-        display: grid;
-        justify-items: stretch;
-        grid-template-columns: [screen-start] 1fr [page-start kicker-start] 50px [middle-start] 50px [text-start kicker-end] 50px 50px 50px 50px 50px 50px 50px 50px [text-end gutter-start] 50px [middle-end] 50px [page-end gutter-end] 1fr [screen-end];
-        grid-column-gap: 16px;
-    }
+            .base-grid,
+            .n-header,
+            .n-byline,
+            .n-title,
+            .n-article,
+            .n-footer {
+                display: grid;
+                justify-items: stretch;
+                grid-template-columns: [screen-start] 1fr [page-start kicker-start middle-start text-start] 45px 45px 45px 45px 45px 45px 45px 45px [ kicker-end text-end gutter-start] 45px [middle-end] 45px [page-end gutter-end] 1fr [screen-end];
+                grid-column-gap: 16px;
+            }
 
-    .grid {
-        grid-column-gap: 16px;
-    }
-}
+            .grid {
+                grid-column-gap: 16px;
+            }
+        }
 
-@media (min-width: 1180px) {
-    .base-grid,
-    .n-header,
-    .n-byline,
-    .n-title,
-    .n-article,
-    .n-footer {
-        display: grid;
-        justify-items: stretch;
-        grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
-        grid-column-gap: 32px;
-    }
-    .grid {
-        grid-column-gap: 32px;
-    }
+        @media(min-width: 1000px) {
 
-}
+            .base-grid,
+            .n-header,
+            .n-byline,
+            .n-title,
+            .n-article,
+            .n-footer {
+                display: grid;
+                justify-items: stretch;
+                grid-template-columns: [screen-start] 1fr [page-start kicker-start] 50px [middle-start] 50px [text-start kicker-end] 50px 50px 50px 50px 50px 50px 50px 50px [text-end gutter-start] 50px [middle-end] 50px [page-end gutter-end] 1fr [screen-end];
+                grid-column-gap: 16px;
+            }
 
-.base-grid {
-  grid-column: screen;
-}
+            .grid {
+                grid-column-gap: 16px;
+            }
+        }
 
-/* default grid column assignments */
-.n-title > *  {
-  grid-column: text;
-}
+        @media (min-width: 1180px) {
 
-.n-article > *  {
-  grid-column: text;
-}
+            .base-grid,
+            .n-header,
+            .n-byline,
+            .n-title,
+            .n-article,
+            .n-footer {
+                display: grid;
+                justify-items: stretch;
+                grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
+                grid-column-gap: 32px;
+            }
 
-.n-header {
-    height: 0px;
-}
+            .grid {
+                grid-column-gap: 32px;
+            }
 
-.n-footer {
-    height: 60px;
-}
+        }
 
-.n-title {
-    padding: 4rem 0 1.5rem;
-}
+        .base-grid {
+            grid-column: screen;
+        }
 
-.l-page {
-    grid-column: page;
-}
+        /* default grid column assignments */
+        .n-title>* {
+            grid-column: text;
+        }
 
-.l-article {
-    grid-column: text;
-}
+        .n-article>* {
+            grid-column: text;
+        }
 
-p {
-  margin-top: 0;
-  margin-bottom: 1em;
-}
+        .n-header {
+            height: 0px;
+        }
 
-.pixelated {
-    image-rendering: pixelated;
-}
+        .n-footer {
+            height: 60px;
+        }
 
-strong {
-    font-weight: 600;
-}
+        .n-title {
+            padding: 4rem 0 1.5rem;
+        }
 
-/*------------------------------------------------------------------*/
-/* title */
-.n-title h1 {
-    font-family: "Barlow",system-ui,Arial,sans-serif;
-    color:#082333;
-    grid-column: text;
-    font-size: 40px;
-    font-weight: 700;
-    line-height: 1.1em;
-    margin: 0 0 0.5rem;
-    text-align: center;
-}
+        .l-page {
+            grid-column: page;
+        }
 
-@media (min-width: 768px) {
-    .n-title h1 {
-        font-size: 50px;
-    }
-}
+        .l-article {
+            grid-column: text;
+        }
 
-/*------------------------------------------------------------------*/
-/* article */
-.n-article {
-    color: rgb(33, 40, 53);
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding-top: 2rem;
-}
+        p {
+            margin-top: 0;
+            margin-bottom: 1em;
+        }
 
-.n-article h2 {
-    contain: layout style;
-    font-weight: 600;
-    font-size: 24px;
-    line-height: 1.25em;
-    margin: 2rem 0 1.5rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: 1rem;
-}
+        .pixelated {
+            image-rendering: pixelated;
+        }
 
-@media (min-width: 768px) {
-    .n-article {
-        line-height: 1.7;
-    }
+        strong {
+            font-weight: 600;
+        }
 
-    .n-article h2 {
-        font-size: 36px;
-    }
-}
+        /*------------------------------------------------------------------*/
+        /* title */
+        .n-title h1 {
+            font-family: "Barlow", system-ui, Arial, sans-serif;
+            color: #082333;
+            grid-column: text;
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1.1em;
+            margin: 0 0 0.5rem;
+            text-align: center;
+        }
 
-/*------------------------------------------------------------------*/
-/* byline */
+        @media (min-width: 768px) {
+            .n-title h1 {
+                font-size: 50px;
+            }
+        }
 
-.n-byline {
-  contain: style;
-  overflow: hidden;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  font-size: 0.8rem;
-  line-height: 1.8em;
-  padding: 1.5rem 0;
-  min-height: 1.8em;
-}
+        /*------------------------------------------------------------------*/
+        /* article */
+        .n-article {
+            color: rgb(33, 40, 53);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 2rem;
+        }
 
-.n-byline .byline {
-  grid-column: text;
-}
+        .n-article h2 {
+            contain: layout style;
+            font-weight: 600;
+            font-size: 24px;
+            line-height: 1.25em;
+            margin: 2rem 0 1.5rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 1rem;
+        }
 
-.byline {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-}
+        @media (min-width: 768px) {
+            .n-article {
+                line-height: 1.7;
+            }
 
-.grid {
-    display: grid;
-    grid-column-gap: 8px;
-}
+            .n-article h2 {
+                font-size: 36px;
+            }
+        }
 
-@media (min-width: 768px) {
-.grid {
-    grid-column-gap: 16px;
-}
-}
+        /*------------------------------------------------------------------*/
+        /* byline */
 
-.n-byline p {
-  margin: 0;
-}
+        .n-byline {
+            contain: style;
+            overflow: hidden;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 0.8rem;
+            line-height: 1.8em;
+            padding: 1.5rem 0;
+            min-height: 1.8em;
+        }
 
-.n-byline h3 {
-    font-size: 0.6rem;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.5);
-    margin: 0;
-    text-transform: uppercase;
-}
-.n-byline .authors-affiliations {
-  grid-column-end: span 2;
-  grid-template-columns: 1fr 1fr;
-}
+        .n-byline .byline {
+            grid-column: text;
+        }
 
-/*------------------------------------------------------------------*/
-/* figures */
-.figure {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-}
+        .byline {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
 
-figcaption, .figcaption {
-    color: rgba(0, 0, 0, 0.6);
-    font-size: 12px;
-    line-height: 1.5em;
-}
+        .grid {
+            display: grid;
+            grid-column-gap: 8px;
+        }
 
-ul.authors {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    text-align: center;
-}
-ul.authors li {
-    padding: 0 0.5rem;
-    display: inline-block;
-}
+        @media (min-width: 768px) {
+            .grid {
+                grid-column-gap: 16px;
+            }
+        }
 
-ul.authors sup {
-    color: rgb(126,126,126);
-}
+        .n-byline p {
+            margin: 0;
+        }
 
-ul.authors.affiliations  {
-    margin-top: 0.5rem;
-}
+        .n-byline h3 {
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.5);
+            margin: 0;
+            text-transform: uppercase;
+        }
 
-ul.authors.affiliations li {
-    color: rgb(126,126,126);
-}
+        .n-byline .authors-affiliations {
+            grid-column-end: span 2;
+            grid-template-columns: 1fr 1fr;
+        }
 
-/* Download section columns.  This switches between two layouts::after
+        /*------------------------------------------------------------------*/
+        /* figures */
+        .figure {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        figcaption,
+        .figcaption {
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 12px;
+            line-height: 1.5em;
+        }
+
+        ul.authors {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        ul.authors li {
+            padding: 0 0.5rem;
+            display: inline-block;
+        }
+
+        ul.authors sup {
+            color: rgb(126, 126, 126);
+        }
+
+        ul.authors.affiliations {
+            margin-top: 0.5rem;
+        }
+
+        ul.authors.affiliations li {
+            color: rgb(126, 126, 126);
+        }
+
+        /* Download section columns.  This switches between two layouts::after
 
 - two columns on larger viewport sizes: side-by-side paper thumb and links
 - single column: no thumb
  */
-.download-section {
-    display: grid;
-    grid-template-areas: "links";
-}
-.download-section h4 {
-    margin-left: 2.5rem;
-    display: block;
-}
-.download-thumb {
-    grid-area: thumb;
-    display: none;
-}
-.download-links {
-    grid-area: links;
-}
-img.dropshadow {
-    box-shadow: 0 1px 10px rgba(0,0,0, 0.3);
-}
+        .download-section {
+            display: grid;
+            grid-template-areas: "links";
+        }
 
-@media(min-width: 1180px) {
-    .download-section {
-        display: grid;
-        grid-template-areas: "thumb links";
-    }
-    .download-thumb {
-        display: block;
-    }
-}
+        .download-section h4 {
+            margin-left: 2.5rem;
+            display: block;
+        }
 
-/* For BibTeX */
-pre {
-    font-size: 0.9em;
-    padding-left: 7px;
-    padding-right: 7px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    border-radius: 3px;
-    background-color: rgb(235, 235, 235);
-    overflow-x: auto;
-}
+        .download-thumb {
+            grid-area: thumb;
+            display: none;
+        }
 
-/* video caption */
+        .download-links {
+            grid-area: links;
+        }
 
-.video {
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-}
+        img.dropshadow {
+            box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+        }
 
-.videocaption {
-    display: flex;
-    font-size: 16px;
-    line-height: 1.5em;
-    margin-bottom: 1rem;
-    justify-content: center;
-}
-   .disable-selection {
-         user-select: none;
-    -moz-user-select: none; /* Firefox */
-     -ms-user-select: none; /* Internet Explorer */
-  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
- -webkit-user-select: none; /* Chrome, Safari, and Opera */
- -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
-}
+        @media(min-width: 1180px) {
+            .download-section {
+                display: grid;
+                grid-template-areas: "thumb links";
+            }
 
-.hidden {
-    display: none;
-}
+            .download-thumb {
+                display: block;
+            }
+        }
 
-h3.figtitle {
-    margin-top: 0;
-    margin-bottom: 0;
-}
+        /* For BibTeX */
+        pre {
+            font-size: 0.9em;
+            padding-left: 7px;
+            padding-right: 7px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            border-radius: 3px;
+            background-color: rgb(235, 235, 235);
+            overflow-x: auto;
+        }
 
-.fig-title-line {
-    grid-template-columns: 2fr 0.75fr;
-}
+        /* video caption */
 
-.fig-thumb-image-row {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr;
-}
+        .video {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
 
-.fig-thumb-image-row-item {
-    width: 100%;
-    min-height: auto;
-    border-radius: var(--small-thumb-border-radius);
-}
+        .videocaption {
+            display: flex;
+            font-size: 16px;
+            line-height: 1.5em;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
 
-.fig-dataset-button {
-    border-color: rgba(0,0,0,0);
-    border-width: 1px;
-    border-style: solid;
-    cursor: pointer;
-    opacity: 0.6;
-}
+        .disable-selection {
+            user-select: none;
+            -moz-user-select: none;
+            /* Firefox */
+            -ms-user-select: none;
+            /* Internet Explorer */
+            -khtml-user-select: none;
+            /* KHTML browsers (e.g. Konqueror) */
+            -webkit-user-select: none;
+            /* Chrome, Safari, and Opera */
+            -webkit-touch-callout: none;
+            /* Disable Android and iOS callouts*/
+        }
 
-.fig-dataset-button.active {
-    border-color: rgba(0,0,0,0.7);
-    border-width: 1px;
-    border-style: solid;
-    opacity: 1.0;
-}
+        .hidden {
+            display: none;
+        }
 
-.grid {
-    display: grid;
-    grid-column-gap: 8px;
-}
+        h3.figtitle {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
 
-.fig-3-image-row {
-    margin-top: 1em;
-    grid-template-columns: 1fr 1.3fr 1fr;
-    grid-template-rows: 1fr;
-}
+        .fig-title-line {
+            grid-template-columns: 2fr 0.75fr;
+        }
 
-.fig-3-image-item {
-    justify-self: center;
-    align-self: center;
-    width: 100%;
-    border-radius: var(--larger-thumb-border-radius);
-}
+        .fig-thumb-image-row {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr;
+        }
 
-/*---------------------------------------------------------------------*/
-.fig-slider {
-    grid-template-columns: auto 2fr;
-    grid-template-rows: 1fr;
-    margin-top: 1em;
-    align-items: start;
-    justify-content: center;
-}
+        .fig-thumb-image-row-item {
+            width: 100%;
+            min-height: auto;
+            border-radius: var(--small-thumb-border-radius);
+        }
 
-.fig-slider img.play_button {
-    margin-right: 8px;
-    cursor: pointer;
-    justify-self: center;
-}
-.fig-slider svg {
-    touch-action: none;
-}
+        .fig-dataset-button {
+            border-color: rgba(0, 0, 0, 0);
+            border-width: 1px;
+            border-style: solid;
+            cursor: pointer;
+            opacity: 0.6;
+        }
 
-.fig-preload {
-    display: none;
-}
-/*---------------------------------------------------------------------*/
-  </style>
-  <!-- inline stylesheet files into the above <style> element -->
-  <link href="https://fonts.googleapis.com/css?family=Montserrat|Segoe+UI" rel="stylesheet"/>
-<!--  <link as="image" href="https://nvlabs-fi-cdn.nvidia.com/_web/stylegan3/img/paper-pdf-512.png" rel="preload"/>-->
-<!--  <link as="image" href="https://nvlabs-fi-cdn.nvidia.com/_web/stylegan3/img/stylegan3-teaser-1920x1006.png" rel="preload"/>-->
- </head>
- <body>
-  <div class="n-header">
-  </div>
-  <div class="n-title">
-   <h1>
-    Discovery of Single Independent Latent Variable
-   </h1>
-  </div>
-  <div class="n-byline">
-   <div class="byline">
-    <ul class="authors">
-     <li>
-      Uri Shaham
-      <sup>
-       1
-      </sup>
-     </li>
-     <li>
-      Jonathan Svirsky
-      <sup>
-       1
-      </sup>
-     </li>
-     <li>
-      Ori Katz
-      <sup>
-       2
-      </sup>
-     </li>
-     <li>
-      Ronen Talmon
-      <sup>
-       2
-      </sup>
-     </li>
-    </ul>
-    <ul class="authors affiliations">
-     <li>
-      <sup>
-       1
-      </sup>
-      Bar-Ilan University
-     </li>
-     <li>
-      <sup>
-       2
-      </sup>
-      Technion
-     </li>
-    </ul>
-   </div>
-  </div>
-  <div class="n-article">
-   <div class="l-article">
-    <img src="twomoons.jpg" width="80%"/>
-   </div>
-   <h2 id="abstract">
-    Abstract
-   </h2>
-   <p>
-    Latent variable discovery is a central problem in data analysis with a broad range of applications in applied science. In this work, we consider data given as an invertible mixture of two statistically independent components, and assume that one of the components is observed while the other is hidden. Our goal is to recover the hidden component. For this purpose, we propose an autoencoder equipped with a discriminator. Unlike the standard nonlinear ICA problem, which was shown to be non-identifiable, in the special case of ICA we consider here, we show that our approach can recover the component of interest up to entropy-preserving transformation. We demonstrate the performance of the proposed approach in  several tasks, including image synthesis, voice cloning, and fetal ECG extraction.
-   </p>
-   <h2 id="links">
-    Links
-   </h2>
-   <div class="grid download-section">
-    <div class="download-thumb">
-     <a href="#">
-      <img class="dropshadow" src="paper.png" width="300"/>
-     </a>
+        .fig-dataset-button.active {
+            border-color: rgba(0, 0, 0, 0.7);
+            border-width: 1px;
+            border-style: solid;
+            opacity: 1.0;
+        }
+
+        .grid {
+            display: grid;
+            grid-column-gap: 8px;
+        }
+
+        .fig-3-image-row {
+            margin-top: 1em;
+            grid-template-columns: 1fr 1.3fr 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        .fig-3-image-item {
+            justify-self: center;
+            align-self: center;
+            width: 100%;
+            border-radius: var(--larger-thumb-border-radius);
+        }
+
+        /*---------------------------------------------------------------------*/
+        .fig-slider {
+            grid-template-columns: auto 2fr;
+            grid-template-rows: 1fr;
+            margin-top: 1em;
+            align-items: start;
+            justify-content: center;
+        }
+
+        .fig-slider img.play_button {
+            margin-right: 8px;
+            cursor: pointer;
+            justify-self: center;
+        }
+
+        .fig-slider svg {
+            touch-action: none;
+        }
+
+        .fig-preload {
+            display: none;
+        }
+
+        /*---------------------------------------------------------------------*/
+    </style>
+    <!-- inline stylesheet files into the above <style> element -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Segoe+UI" rel="stylesheet" />
+    <!--  <link as="image" href="https://nvlabs-fi-cdn.nvidia.com/_web/stylegan3/img/paper-pdf-512.png" rel="preload"/>-->
+    <!--  <link as="image" href="https://nvlabs-fi-cdn.nvidia.com/_web/stylegan3/img/stylegan3-teaser-1920x1006.png" rel="preload"/>-->
+</head>
+
+<body>
+    <div class="n-header">
     </div>
-    <div class="download-links">
-     <ul>
-      <li>
-       <a href="#">
-        Paper PDF
-       </a>
-      </li>
-      <li>
-       <a href="https://arxiv.org/pdf/2110.05887.pdf">
-        arXiv
-       </a>
-      </li>
-      <li>
-       <a href="https://github.com/shaham-labs/disilv">
-        Code release on GitHub
-       </a>
-      </li>
-     </ul>
+    <div class="n-title">
+        <h1>
+            Discovery of Single Independent Latent Variable
+        </h1>
     </div>
-   </div>
-   <p> We present a set of the conversions generated by our method when converting seen speakers i.e. found in our method training data.
-    For each conversion we display the source sample from the seen speaker, a sample recorded by the target speaker and finally the generated sample by applying the Voice Conversion.
-  </p>
-   <div>
-    <h3> Conversions </h3>
+    <div class="n-byline">
+        <div class="byline">
+            <ul class="authors">
+                <li>
+                    Uri Shaham
+                    <sup>
+                        1
+                    </sup>
+                </li>
+                <li>
+                    Kelly Stanton
+                    <sup>
+                        1
+                    </sup>
+                </li>
+                <li>
+                    Henri Li
+                    <sup>
+                        1
+                    </sup>
+                </li>
+                <li>
+                    Yuval Kluger
+                    <sup>
+                        1
+                    </sup>
+                </li>
+                <li>
+                    Boaz Nadler
+                    <sup>
+                        2
+                    </sup>
+                </li>
+                <li>
+                    Ronen Basri
+                    <sup>
+                        2
+                    </sup>
+                </li>
 
-</div>
+            </ul>
+            <ul class="authors affiliations">
+                <li>
+                    <sup>
+                        1
+                    </sup>
+                    Yale University
+                </li>
+                <li>
+                    <sup>
+                        2
+                    </sup>
+                    Weizmann Institute of Science
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="n-article">
+        <div class="l-article">
+            <img src="twomoons.jpg" width="80%" />
+        </div>
+        <h2 id="abstract">
+            Abstract
+        </h2>
+        <p>
+            Spectral clustering is a leading and popular technique in unsupervised data analysis. Two of its major
+            limitations are scalability and generalization of the spectral embedding (i.e., out-of-sample-extension). In
+            this paper we introduce a deep
+            learning approach to spectral clustering that overcomes the above shortcomings.
+            Our network, which we call SpectralNet, learns a map that embeds input data
+            points into the eigenspace of their associated graph Laplacian matrix and subsequently clusters them. We
+            train SpectralNet using a procedure that involves
+            constrained stochastic optimization. Stochastic optimization allows it to scale
+            to large datasets, while the constraints, which are implemented using a specialpurpose output layer, allow
+            us to keep the network output orthogonal. Moreover, the map learned by SpectralNet naturally generalizes the
+            spectral embedding to unseen data points. To further improve the quality of the clustering, we
+            replace the standard pairwise Gaussian affinities with affinities learned from the
+            given unlabeled data using a Siamese network. Additional improvement of the
+            resulting clustering can be achieved by applying the network to code representations produced, e.g., by
+            standard autoencoders. Our end-to-end learning procedure is fully unsupervised. In addition, we apply VC
+            dimension theory to derive a lower bound on the size of SpectralNet. State-of-the-art clustering results
+            are reported on the Reuters dataset.
+        </p>
+        <h2 id="links">
+            Links
+        </h2>
+        <div class="grid download-section">
+            <div class="download-thumb">
+                <a href="#">
+                    <img class="dropshadow" src="paper.png" width="300" />
+                </a>
+            </div>
+            <div class="download-links">
+                <ul>
+                    <li>
+                        <a href="https://openreview.net/pdf?id=HJ_aoCyRZ">
+                            arXiv
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/shaham-lab/SpectralNet">
+                            Code release on GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
-   <h2 id="citation">
-    Citation
-   </h2>
-   <pre><code>@inproceedings{shaham2018,
-  author = {Uri Shaham and Jonathan Svirsky and Ori Katz and Ronen Talmon},
+        <h2 id="citation">
+            Citation
+        </h2>
+        <pre><code>@inproceedings{shaham2018,
+  author = {Uri Shaham and Kelly Stanton and Henri Li and Boaz Nadler and Ronen Basri and Yuval Kluger},
   title = {Discovery of Single Independent Latent Variable},
-  booktitle = {Proc. ICLR},
+  booktitle = {Proc. ICLR 2018},
   year = {2018}
-}</code></pre>
-   <h2 id="license">
-    License
-   </h2>
-   <p>
-    <a href="https://en.wikipedia.org/wiki/MIT_License">MIT License</a>.
-     Feel free to use any of the material in your own work, as long as you give us appropriate credit by mentioning the title and author list of our paper.
-   </p>
+}
+</code></pre>
+        <h2 id="license">
+            License
+        </h2>
+        <p>
+            <a href="https://en.wikipedia.org/wiki/MIT_License">MIT License</a>.
+            Feel free to use any of the material in your own work, as long as you give us appropriate credit by
+            mentioning the title and author list of our paper.
+        </p>
 
-  </div>
-  <div class="n-footer">
-  </div>
- </body>
+    </div>
+    <div class="n-footer">
+    </div>
+</body>
+
 </html>
