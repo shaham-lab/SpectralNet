@@ -1,0 +1,29 @@
+{
+    "dataset": {
+        "dpath": "../data/spiral_arm.csv",
+        "lpath": "../data/spiral_arm_label.csv"
+    },
+    "n_clusters": 3,
+    "is_sparse_graph": false,
+    "should_use_ae": false,
+    "should_use_siamese": false,
+    "should_check_generalization": false,
+    "spectral": {
+        "architecture": {
+            "n_layers": 4,
+            "hidden_dim1": 256,
+            "hidden_dim2": 128,
+            "output_dim": 3
+        },
+        "epochs": 80,
+        "lr": 1e-3,
+        "lr_decay": 0.1,
+        "min_lr": 1e-8,
+        "batch_size": 50,
+        "n_neighbors": 23,
+        "scale_k": 2,
+        "is_local_scale": false,
+        "n_clusters": 3,
+        "patience": 10
+    }
+}

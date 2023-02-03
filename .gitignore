@@ -1,0 +1,10 @@
+__py*
+*DS
+data/MNIST
+*.dat
+*.h5
+*qrels
+src/weights
+*.csv
+*.ann
+src/wandb

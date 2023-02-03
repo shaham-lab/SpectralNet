@@ -1,0 +1,26 @@
+{
+    "dataset": "twomoons",
+    "n_clusters": 2,
+    "is_sparse_graph": false,
+    "should_use_ae": false,
+    "should_use_siamese": false,
+    "should_check_generalization": false,
+    "spectral": {
+        "architecture": {
+            "n_layers": 4,
+            "hidden_dim1": 128,
+            "hidden_dim2": 128,
+            "output_dim": 2
+        },
+        "epochs": 40,
+        "lr": 1e-2,
+        "lr_decay": 0.1,
+        "min_lr": 1e-5,
+        "batch_size": 712,
+        "n_neighbors": 8,
+        "scale_k": 2,
+        "is_local_scale": false,
+        "n_clusters": 2,
+        "patience": 10
+    }
+}

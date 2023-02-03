@@ -1,0 +1,57 @@
+{
+    "dataset": "reuters",
+    "n_clusters": 4,
+    "is_sparse_graph": false,
+    "should_use_ae": true,
+    "should_use_siamese": true,
+    "should_check_generalization": false,
+    "ae": {
+        "architecture": {
+            "hidden_dim1": 500,
+            "hidden_dim2": 500,
+            "hidden_dim3": 2000,
+            "output_dim": 10
+        },
+        "epochs": 40,
+        "n_samples": 60000,
+        "lr": 1e-3,
+        "lr_decay": 0.1,
+        "min_lr": 1e-7,
+        "patience": 5,
+        "batch_size": 256
+    },
+    "siamese": {
+        "architecture": {
+            "n_layers": 4,
+            "hidden_dim1": 512,
+            "hidden_dim2": 256,
+            "output_dim": 128
+        },
+        "epochs": 70,
+        "n_samples": 300000,
+        "lr": 1e-3,
+        "lr_decay": 0.1,
+        "min_lr": 1e-7,
+        "patience": 10,
+        "n_neighbors": 100,
+        "use_approx": true,
+        "batch_size": 128
+    },
+    "spectral": {
+        "architecture": {
+            "n_layers": 4,
+            "hidden_dim1": 512,
+            "hidden_dim2": 256,
+            "outpt_dim": 4
+        },
+        "epochs": 5,
+        "lr": 3e-5,
+        "lr_decay": 0.1,
+        "min_lr": 1e-8,
+        "batch_size": 2048,
+        "n_neighbors": 40,
+        "scale_k": 25,
+        "is_local_scale": false,
+        "patience": 5
+    }
+}
