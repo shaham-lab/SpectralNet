@@ -10,7 +10,7 @@ Link to the paper - [SpectralNet](https://openreview.net/pdf?id=HJ_aoCyRZ)
 
 ## Requirements
 
-To run SpectralNet, you'll need Python 3.x and to run the requirements.txt file as follows: <br>
+To run SpectralNet, you'll need Python > 3.10.x and to run the requirements.txt file as follows: <br>
 
 ```bash
 pip3 install -r req.txt
