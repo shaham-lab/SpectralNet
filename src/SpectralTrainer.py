@@ -53,7 +53,13 @@ class SpectralNetModel(nn.Module):
         if is_orthonorm:
             m = Y_tilde.shape[0]
             to_factorize = torch.mm(Y_tilde.t(), Y_tilde)
-            L = torch.linalg.cholesky(to_factorize, upper=False)
+            
+            try:
+                L = torch.linalg.cholesky(to_factorize, upper=False)
+            except torch._C._LinAlgError:
+                to_factorize += 0.1 * torch.eye(to_factorize.shape[0])
+                L = torch.linalg.cholesky(to_factorize, upper=False)
+
             L_inverse = torch.inverse(L)
             self.orthonorm_weights = np.sqrt(m) * L_inverse.t()
 
