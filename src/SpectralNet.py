@@ -66,9 +66,12 @@ class SpectralNet:
         X = X.view(X.size(0), -1)
         X = X.to(self.device)
         should_use_ae = self.config["should_use_ae"]
-        if should_use_ae:
-            X = self.ae_net.encoder(X)
-        self.embeddings_ = self.spec_net(X, is_orthonorm = False).detach().cpu().numpy()
+        
+        with torch.no_grad():
+            if should_use_ae:
+                X = self.ae_net.encoder(X)
+            self.embeddings_ = self.spec_net(X, is_orthonorm = False).detach().cpu().numpy()
+        
         cluster_assignments = self._get_clusters_by_kmeans(self.embeddings_)
         return cluster_assignments
 
