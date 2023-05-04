@@ -268,11 +268,11 @@ def compute_scale(Dis: np.ndarray, k: int = 2, med: bool = True, is_local: bool 
     Computes the scale for the Gaussian similarity function
 
     Args:
-        Dis:        Distances of the k nearest neighbors of each data point.
-        k:          Number of nearest neighbors. Defaults to 2.
-        med:        Scale calculation method. Can be calculated by the median distance
-                    from a data point to its neighbors, or by the maximum distance. 
-        is_local:   Local distance (different for each data point), or global distance. Defaults to local.
+        Dis:            Distances of the k nearest neighbors of each data point.
+        k (optional):   Number of nearest neighbors for the scale calculation. Relevant only for global scale.
+        med:            Scale calculation method. Can be calculated by the median distance
+                        from a data point to its neighbors, or by the maximum distance. 
+        is_local:       Local distance (different for each data point), or global distance. Defaults to local.
 
     Returns:
         scale (global or local)
@@ -394,22 +394,5 @@ def create_weights_dir():
         os.makedirs('weights')
 
 
-def get_affinity_matrix(X: torch.Tensor) -> torch.Tensor:
-    """
-    Computes the affinity matrix W
 
-    Args:
-        X (torch.Tensor):  Data
-
-    Returns:
-        torch.Tensor: Affinity matrix W
-    """
-    is_local = True
-    n_neighbors = 30
-    scale_k = 15
-    Dx = torch.cdist(X,X)
-    Dis, indices = get_nearest_neighbors(X, k=n_neighbors + 1)
-    scale = compute_scale(Dis, k=scale_k, is_local=is_local)
-    W = get_gaussian_kernel(Dx, scale, indices, device=torch.device("cpu"), is_local=is_local)
-    return W
 
