@@ -269,7 +269,7 @@ def compute_scale(Dis: np.ndarray, k: int = 2, med: bool = True, is_local: bool 
 
     Args:
         Dis:            Distances of the k nearest neighbors of each data point.
-        k (optional):   Number of nearest neighbors for the scale calculation. Relevant only for global scale.
+        k (optional):   Number of nearest neighbors for the scale calculation. Relevant for global scale only.
         med:            Scale calculation method. Can be calculated by the median distance
                         from a data point to its neighbors, or by the maximum distance. 
         is_local:       Local distance (different for each data point), or global distance. Defaults to local.

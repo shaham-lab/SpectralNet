@@ -116,4 +116,4 @@ If you want to use your own dataset, you should provide a json config file that 
 
 `scale_k`- Neighbor used to determine scale of gaussian graph Laplacian. Calculated by taking median distance of the (scale_k)th neighbor, over a set of size batch_size sampled from the datset. <br>
 Note that in our settings, when the scale is computed as the median distance, 'scale_k' = 'n_neighbors' <br><br>
-`is_local_scale` - Global scale or local scale. <br><br>
+`is_local_scale` - Local scale or global scale. Local scale means local distance (different for each data point)<br><br>
