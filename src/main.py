@@ -45,13 +45,8 @@ def main():
             x_train = torch.cat([x_train, x_test])
             y_train = torch.cat([y_train, y_test])
     
-    try:
-        spectralnet = SpectralNet(n_clusters=n_clusters, config=config)
-        spectralnet.fit(x_train, y_train)
-
-    except torch._C._LinAlgError:
-        raise InvalidMatrixException("The output of the network is not a valid matrix to the orthogonalization layer. " 
-                                     "Try to decrease the learning rate to fix the problem.") 
+    spectralnet = SpectralNet(n_clusters=n_clusters, config=config)
+    spectralnet.fit(x_train, y_train)
 
     if not should_check_generalization:
 
