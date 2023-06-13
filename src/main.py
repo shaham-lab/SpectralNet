@@ -56,35 +56,41 @@ def main():
     if not should_check_generalization:
 
         cluster_assignments = spectralnet.predict(x_train)
+        embeddings = spectralnet.embeddings_
+        
         if y_train is not None:    
             y = y_train.detach().cpu().numpy()
             acc_score = Metrics.acc_score(cluster_assignments, y, n_clusters)
             nmi_score = Metrics.nmi_score(cluster_assignments, y)
-            embeddings = spectralnet.embeddings_
             print(f"ACC: {np.round(acc_score, 3)}")
             print(f"NMI: {np.round(nmi_score, 3)}")
 
-            return embeddings, cluster_assignments
+        return embeddings, cluster_assignments
         
     else:
-        y_test = y_test.detach().cpu().numpy()
+
         spectralnet.predict(x_train)
         train_embeddings = spectralnet.embeddings_
-        test_assignments = spectralnet.predict(x_test)
+        spectralnet.predict(x_test)
         test_embeddings = spectralnet.embeddings_
-        kmeans_train = KMeans(n_clusters=n_clusters).fit(train_embeddings)
-        dist_matrix = cdist(test_embeddings, kmeans_train.cluster_centers_)
-        closest_cluster = np.argmin(dist_matrix, axis=1)
-        acc_score = Metrics.acc_score(closest_cluster, y_test, n_clusters)
-        nmi_score = Metrics.nmi_score(closest_cluster, y_test)
-        print(f"ACC: {np.round(acc_score, 3)}")
-        print(f"NMI: {np.round(nmi_score, 3)}")
+        
+        if y_test is not None:
+            y_test = y_test.detach().cpu().numpy()
+            spectralnet.predict(x_train)
+            kmeans_train = KMeans(n_clusters=n_clusters, n_init=10).fit(train_embeddings)
+            dist_matrix = cdist(test_embeddings, kmeans_train.cluster_centers_)
+            closest_cluster = np.argmin(dist_matrix, axis=1)
+            acc_score = Metrics.acc_score(closest_cluster, y_test, n_clusters)
+            nmi_score = Metrics.nmi_score(closest_cluster, y_test)
+            print(f"ACC: {np.round(acc_score, 3)}")
+            print(f"NMI: {np.round(nmi_score, 3)}")
 
-        return test_embeddings, test_assignments
+        return test_embeddings, None
 
 
 
 if __name__ == "__main__":
     embeddings, assignments = main()
-    write_assignmets_to_file(assignments)
-    print("Your assignments were saved to the file 'cluster_assignments.csv!")
+    if assignments is not None:
+        write_assignmets_to_file(assignments)
+        print("Your assignments were saved to the file 'cluster_assignments.csv!\n")

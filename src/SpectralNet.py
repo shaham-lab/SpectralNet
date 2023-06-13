@@ -70,7 +70,7 @@ class SpectralNet:
         with torch.no_grad():
             if should_use_ae:
                 X = self.ae_net.encoder(X)
-            self.embeddings_ = self.spec_net(X, is_orthonorm = False).detach().cpu().numpy()
+            self.embeddings_ = self.spec_net(X, should_update_orth_weights=False).detach().cpu().numpy()
         
         cluster_assignments = self._get_clusters_by_kmeans(self.embeddings_)
         return cluster_assignments
@@ -86,7 +86,7 @@ class SpectralNet:
         Returns:
             np.ndarray:  the cluster assignments for the given data
         """
-        kmeans = KMeans(n_clusters=self.n_clusters).fit(embeddings)
+        kmeans = KMeans(n_clusters=self.n_clusters, n_init=10).fit(embeddings)
         cluster_assignments = kmeans.predict(embeddings)
         return cluster_assignments
     

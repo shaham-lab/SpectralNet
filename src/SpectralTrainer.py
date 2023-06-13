@@ -4,7 +4,6 @@ import torch.nn as nn
 import torch.optim as optim
 
 from utils import *
-from torch.optim.lr_scheduler import _LRScheduler
 from torch.utils.data import DataLoader, random_split, TensorDataset
 
 
@@ -13,15 +12,12 @@ class SpectralNetModel(nn.Module):
     def __init__(self, architecture: dict, input_dim: int):
         super(SpectralNetModel, self).__init__()
         self.architecture = architecture
-        self.num_of_layers = self.architecture["n_layers"]
         self.layers = nn.ModuleList()
         self.input_dim = input_dim
         
         current_dim = self.input_dim
         for layer, dim in self.architecture.items():
             next_dim = dim
-            if layer == "n_layers":
-                continue
             if layer == "output_dim":
                 layer = nn.Sequential(nn.Linear(current_dim, next_dim), nn.Tanh())
                 self.layers.append(layer)
@@ -30,17 +26,41 @@ class SpectralNetModel(nn.Module):
                 self.layers.append(layer)
                 current_dim = next_dim
   
-
-    def forward(self, x: torch.Tensor, is_orthonorm: bool = True) -> torch.Tensor:
+    def _make_orthonorm_weights(self, Y: torch.Tensor) -> torch.Tensor:
         """
-        This function performs the forward pass of the model.
-        If is_orthonorm is True, the output of the network is orthonormalized
+        This function orthonormalizes the output of the network 
         using the Cholesky decomposition.
 
         Args:
-            x (torch.Tensor):               The input tensor
-            is_orthonorm (bool, optional):  Whether to orthonormalize the output or not. 
-                                            Defaults to True.
+            Y (torch.Tensor): The output of the network
+
+        Returns:
+            torch.Tensor: The orthonormalized output
+        """
+        m = Y.shape[0]
+        to_factorize = torch.mm(Y.t(), Y)
+        
+        try:
+            L = torch.linalg.cholesky(to_factorize, upper=False)
+        except torch._C._LinAlgError:
+            to_factorize += 0.1 * torch.eye(to_factorize.shape[0])
+            L = torch.linalg.cholesky(to_factorize, upper=False)
+
+        L_inverse = torch.inverse(L)
+        orthonorm_weights = np.sqrt(m) * L_inverse.t()
+        return orthonorm_weights
+    
+    
+    def forward(self, x: torch.Tensor, should_update_orth_weights: bool = True) -> torch.Tensor:
+        """
+        This function performs the forward pass of the model.
+        If should_update_orth_weights is True, the orthonormalization weights are updated 
+        using the Cholesky decomposition.
+
+        Args:
+            x (torch.Tensor):                             The input tensor
+            should_update_orth_weights (bool, optional):  Whether to update the orthonormalization 
+                                                          weights or not
 
         Returns:
             torch.Tensor: The output tensor
@@ -50,19 +70,9 @@ class SpectralNetModel(nn.Module):
             x = layer(x)
 
         Y_tilde = x
-        if is_orthonorm:
-            m = Y_tilde.shape[0]
-            to_factorize = torch.mm(Y_tilde.t(), Y_tilde)
-            
-            try:
-                L = torch.linalg.cholesky(to_factorize, upper=False)
-            except torch._C._LinAlgError:
-                to_factorize += 0.1 * torch.eye(to_factorize.shape[0])
-                L = torch.linalg.cholesky(to_factorize, upper=False)
-
-            L_inverse = torch.inverse(L)
-            self.orthonorm_weights = np.sqrt(m) * L_inverse.t()
-
+        if should_update_orth_weights:
+            self.orthonorm_weights = self._make_orthonorm_weights(Y_tilde)
+        
         Y = torch.mm(Y_tilde, self.orthonorm_weights)
         return Y
 
@@ -164,16 +174,14 @@ class SpectralTrainer:
 
                 # Orthogonalization step
                 self.spectral_net.eval()
-                self.spectral_net(X_orth, is_orthonorm=True)
+                self.spectral_net(X_orth, should_update_orth_weights=True)
                 
                 # Gradient step
                 self.spectral_net.train()
                 self.optimizer.zero_grad()
                 
-                if self.is_sparse:
-                    X_grad = make_batch_for_sparse_grapsh(X_grad)
 
-                Y = self.spectral_net(X_grad, is_orthonorm=False)
+                Y = self.spectral_net(X_grad, should_update_orth_weights=False)
                 if self.siamese_net is not None:
                     with torch.no_grad():
                         X_grad = self.siamese_net.forward_once(X_grad)
@@ -219,7 +227,7 @@ class SpectralTrainer:
                 if self.is_sparse:
                     X = make_batch_for_sparse_grapsh(X)
                     
-                Y = self.spectral_net(X, is_orthonorm=False)
+                Y = self.spectral_net(X, should_update_orth_weights=False)
                 with torch.no_grad():
                     if self.siamese_net is not None:
                         X = self.siamese_net.forward_once(X)
@@ -273,65 +281,3 @@ class SpectralTrainer:
         ortho_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
         valid_loader = DataLoader(valid_dataset, batch_size=self.batch_size, shuffle=False)
         return train_loader, ortho_loader, valid_loader
-
-
-
-class ReduceLROnAvgLossPlateau(_LRScheduler):
-    def __init__(self, optimizer, factor=0.1, patience=10, min_lr=0, verbose=False, min_delta=1e-4):
-        """
-        Custom ReduceLROnPlateau scheduler that uses the average loss instead of the loss of the last epoch.
-
-        Args:
-            optimizer (_type_):             The optimizer
-            factor (float, optional):       factor by which the learning rate will be reduced. 
-                                            new_lr = lr * factor. Defaults to 0.1.
-            patience (int, optional):       number of epochs with no average improvement after 
-                                            which learning rate will be reduced.
-            min_lr (int, optional):         A lower bound on the learning rate of all param groups.
-            verbose (bool, optional):       If True, prints a message to stdout for each update.
-            min_delta (_type_, optional):   threshold for measuring the new optimum, to only focus on
-                                            significant changes. Defaults to 1e-4.
-        """
-
-        self.factor = factor
-        self.min_delta = min_delta
-        self.patience = patience
-        self.verbose = verbose
-        self.wait = 0
-        self.best = 1e5
-        self.avg_losses = []
-        self.min_lr = min_lr
-        super(ReduceLROnAvgLossPlateau, self).__init__(optimizer)
-
-    def get_lr(self):
-        return [base_lr * self.factor ** self.num_bad_epochs
-                for base_lr in self.base_lrs]
-
-    def step(self, loss=1.0,  epoch=None):
-        if epoch is None:
-            epoch = self.last_epoch + 1
-        self.last_epoch = epoch
-        
-
-        current_loss = loss
-        if len(self.avg_losses) < self.patience:
-            self.avg_losses.append(current_loss)
-        else:
-            self.avg_losses.pop(0)
-            self.avg_losses.append(current_loss)
-        avg_loss = sum(self.avg_losses) / len(self.avg_losses)
-        if avg_loss < self.best - self.min_delta:
-            self.best = avg_loss
-            self.wait = 0
-        else:
-            if self.wait >= self.patience:
-                for param_group in self.optimizer.param_groups:
-                    old_lr = float(param_group['lr'])
-                    if old_lr > self.min_lr:
-                        new_lr = old_lr * self.factor
-                        new_lr = max(new_lr, self.min_lr)
-                        param_group['lr'] = new_lr
-                        if self.verbose:
-                            print(f'Epoch {epoch}: reducing learning rate to {new_lr}.')
-                self.wait = 0
-            self.wait += 1

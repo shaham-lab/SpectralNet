@@ -22,7 +22,6 @@
     },
     "siamese": {
         "architecture": {
-            "n_layers": 4,
             "hidden_dim1": 512,
             "hidden_dim2": 256,
             "output_dim": 128
@@ -39,7 +38,6 @@
     },
     "spectral": {
         "architecture": {
-            "n_layers": 4,
             "hidden_dim1": 512,
             "hidden_dim2": 256,
             "outpt_dim": 4
