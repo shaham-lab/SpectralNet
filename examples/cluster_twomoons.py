@@ -7,8 +7,8 @@ import numpy as np
 
 from data import load_data
 
-from ..src.spectralnet import Metrics
-from ..src.spectralnet import SpectralNet
+from spectralnet import Metrics
+from spectralnet import SpectralNet
 
 
 class InvalidMatrixException(Exception):

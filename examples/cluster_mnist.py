@@ -36,33 +36,17 @@ def main():
         y_train = torch.cat([y_train, y_test])
 
     spectralnet = SpectralNet(
-        n_clusters=2,
-        should_use_ae=False,
-        should_use_siamese=False,
-        spectral_batch_size=712,
-        spectral_epochs=40,
-        spectral_is_local_scale=False,
-        spectral_n_nbg=8,
-        spectral_scale_k=2,
-        spectral_lr=1e-2,
-        spectral_hiddens=[128, 128, 2],
+        n_clusters=10,
+        should_use_ae=True,
+        should_use_siamese=True,
     )
-
-    # spectralnet = SpectralNet(
-    #     n_clusters=10,
-    #     should_use_ae=True,
-    #     should_use_siamese=True,
-    #     ae_epochs=2,
-    #     siamese_epochs=2,
-    #     spectral_epochs=2,
-    # )
     spectralnet.fit(x_train)
     cluster_assignments = spectralnet.predict(x_train)
     embeddings = spectralnet.embeddings_
 
     if y_train is not None:
         y = y_train.detach().cpu().numpy()
-        acc_score = Metrics.acc_score(cluster_assignments, y, n_clusters=2)
+        acc_score = Metrics.acc_score(cluster_assignments, y, n_clusters=10)
         nmi_score = Metrics.nmi_score(cluster_assignments, y)
         print(f"ACC: {np.round(acc_score, 3)}")
         print(f"NMI: {np.round(nmi_score, 3)}")
