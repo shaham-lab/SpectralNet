@@ -1,11 +1,7 @@
-__py*
-*DS
-data/MNIST
-*.dat
-*.h5
-*qrels
-src/weights
-*.csv
-*.ann
-src/wandb
 .DS_Store
+__pycache__
+*main.py
+*data.py
+data
+dist
+*spectralnet.egg-info

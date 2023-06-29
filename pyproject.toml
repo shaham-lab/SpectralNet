@@ -1,0 +1,16 @@
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = [
+    "setuptools",
+    "wheel",
+    "torch>=2.0.0",
+    "torchvision>=0.15.1",
+    "h5py>=3.8.0",
+    "numpy>=1.24",
+    "annoy>=1.17.1",
+    "scipy>=1.10.1",
+    "munkres",
+    "matplotlib",
+    "scikit-learn>=1.2.2"
+]
+build-backend = "setuptools.build_meta"
