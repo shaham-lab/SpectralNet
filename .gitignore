@@ -1,7 +1,4 @@
 .DS_Store
 __pycache__
-*main.py
-*data.py
-data
 dist
-*spectralnet.egg-info
+spectralnet.egg-info
