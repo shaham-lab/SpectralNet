@@ -35,7 +35,7 @@ def main():
     embeddings = spectralnet.embeddings_
 
     if y is not None:
-        y = y_train.detach().cpu().numpy()
+        y = y.detach().cpu().numpy()
         acc_score = Metrics.acc_score(cluster_assignments, y, n_clusters=2)
         nmi_score = Metrics.nmi_score(cluster_assignments, y)
         print(f"ACC: {np.round(acc_score, 3)}")
