@@ -1,7 +1,7 @@
 # SpectralNet
 
 <p align="center">
-    <img src="https://github.com/AmitaiYacobi/SpectralNet01/blob/main/figures/twomoons.png">
+    <img src="https://github.com/shaham-lab/SpectralNet/blob/main/figures/twomoons.png">
 
 SpectralNet is a Python package that performs spectral clustering with deep neural networks.<br><br>
 This package is based on the following paper - [SpectralNet](https://openreview.net/pdf?id=HJ_aoCyRZ)
