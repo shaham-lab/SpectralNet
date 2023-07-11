@@ -5,3 +5,4 @@ spectralnet.egg-info
 /cluster_mnist.py
 /cluster_twomoons.py
 /data.py
+data

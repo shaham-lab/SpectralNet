@@ -394,6 +394,40 @@ def get_gaussian_kernel(
     return sym_W
 
 
+def get_t_kernel(
+    D: torch.Tensor, Ids: np.ndarray, device: torch.device, is_local: bool = True
+) -> torch.Tensor:
+    """
+    Computes the t similarity function according to a given distance matrix D and a given scale.
+
+    Parameters
+    ----------
+    D : torch.Tensor
+        Distance matrix.
+    Ids : np.ndarray
+        Indices of the k nearest neighbors of each sample.
+    device : torch.device
+        Defaults to torch.device("cpu").
+    is_local : bool, optional
+        Determines whether the given scale is global or local. Defaults to True.
+
+    Returns
+    -------
+    torch.Tensor
+        Matrix W with t similarities.
+    """
+
+    W = torch.pow(1 + torch.pow(D, 2), -1)
+    if Ids is not None:
+        n, k = Ids.shape
+        mask = torch.zeros([n, n]).to(device=device)
+        for i in range(len(Ids)):
+            mask[i, Ids[i]] = 1
+        W = W * mask
+    sym_W = (W + W.T) / 2.0
+    return sym_W
+
+
 def plot_data_by_assignments(X, assignments: np.ndarray):
     """
     Plots the data with the assignments obtained from SpectralNet. Relevant only for 2D data.
