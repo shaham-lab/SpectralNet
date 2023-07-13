@@ -53,16 +53,16 @@ You can read the code docs for more information and functionalities
 SpectralNet can also be used as an effective and representive data reduction technique, so in case you want to perform data reduction you can do the following:
 
 ```python
-    from spectralnet import SpectralReduction
+from spectralnet import SpectralReduction
 
-    spectralreduction = SpectralReduction(
-        n_components=3,
-        should_use_ae=True,
-        should_use_siamese=True,
-    )
+spectralreduction = SpectralReduction(
+    n_components=3,
+    should_use_ae=True,
+    should_use_siamese=True,
+)
 
-    X_new = spectralreduction.fit_transform(X)
-    spectralreduction.visualize(X_new, y, n_components=2)
+X_new = spectralreduction.fit_transform(X)
+spectralreduction.visualize(X_new, y, n_components=2)
 ```
 
 Full code can be found in "examples" folder and in the following jupyter notebook - [Data reduction]()
