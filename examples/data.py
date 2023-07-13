@@ -1,7 +1,10 @@
 import h5py
 import torch
 import numpy as np
+import scipy.io
 
+
+from torch.utils.data import Dataset, Subset
 from sklearn.datasets import make_moons
 from torchvision import datasets, transforms
 from sklearn.preprocessing import StandardScaler

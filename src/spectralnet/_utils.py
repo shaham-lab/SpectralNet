@@ -277,14 +277,13 @@ def get_nearest_neighbors(
     tuple[np.ndarray, np.ndarray]
         Distances and indices of each data point.
     """
-
     if Y is None:
         Y = X
     if len(X) < k:
         k = len(X)
     X = X.cpu().detach().numpy()
     Y = Y.cpu().detach().numpy()
-    nbrs = NearestNeighbors(n_neighbors=k).fit(Y)
+    nbrs = NearestNeighbors(n_neighbors=k).fit(X)
     Dis, Ids = nbrs.kneighbors(X)
     return Dis, Ids
 
@@ -426,6 +425,33 @@ def get_t_kernel(
         W = W * mask
     sym_W = (W + W.T) / 2.0
     return sym_W
+
+
+def get_affinity_matrix(
+    X: torch.Tensor, n_neighbors: int, device: torch.device
+) -> torch.Tensor:
+    """
+    Computes the affinity matrix for the data X.
+
+    Parameters
+    ----------
+    X : torch.Tensor
+        Data.
+    n_neighbors : int
+        Number of nearest neighbors to calculate.
+    device : torch.device
+        Defaults to torch.device("cpu").
+
+    Returns
+    -------
+    torch.Tensor
+        Affinity matrix.
+    """
+
+    Dx = torch.cdist(X, X)
+    Dis, indices = get_nearest_neighbors(X, k=n_neighbors + 1)
+    W = get_t_kernel(Dx, indices, device=device)
+    return W
 
 
 def plot_data_by_assignments(X, assignments: np.ndarray):

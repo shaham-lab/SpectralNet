@@ -16,6 +16,8 @@ pip install spectralnet
 
 ## Usage
 
+### Clustering
+
 The basic functionality is quite intuitive and easy to use, e.g.,
 
 ```python
@@ -45,6 +47,24 @@ print(f"NMI: {np.round(nmi_score, 3)}")
 ```
 
 You can read the code docs for more information and functionalities
+
+### Data reduction and visualization
+
+SpectralNet can also be used as an effective and representive data reduction technique, so in case you want to perform data reduction you can do the following:
+
+```python
+
+    spectralreduction = SpectralReduction(
+        n_components=10,
+        should_use_ae=True,
+        should_use_siamese=True,
+    )
+
+    X_new = spectralreduction.fit_transform(X)
+    spectralreduction.visualize(X_new, y, n_components=2)
+```
+
+Full code can be found in "examples" folder and in the following jupyter notebook - [Data reduction]()
 
 ## Citation
 

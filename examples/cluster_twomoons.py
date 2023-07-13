@@ -9,7 +9,6 @@ from spectralnet import SpectralNet
 
 def main():
     x_train, x_test, y_train, y_test = load_data("twomoons")
-
     X = torch.cat([x_train, x_test])
 
     if y_train is not None:
