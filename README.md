@@ -65,7 +65,6 @@ X_new = spectralreduction.fit_transform(X)
 spectralreduction.visualize(X_new, y, n_components=2)
 ```
 
-Full code can be found in "examples" folder and in the following jupyter notebook - [Data reduction]()
 
 ## Citation
 
