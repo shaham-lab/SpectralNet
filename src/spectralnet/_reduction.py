@@ -291,7 +291,6 @@ class SpectralReduction:
         V_batch = self._predict(batch_raw)
         eigenvalues = np.diag(V_batch.T @ L_batch @ V_batch)
         indices = np.argsort(eigenvalues)
-
         smallest_index = indices[0]
         V = V[:, np.arange(V.shape[1]) != smallest_index]
         return V
