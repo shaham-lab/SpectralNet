@@ -46,7 +46,13 @@ print(f"ACC: {np.round(acc_score, 3)}")
 print(f"NMI: {np.round(nmi_score, 3)}")
 ```
 
-You can read the code docs for more information and functionalities
+You can read the code docs for more information and functionalities<br>
+
+#### Running examples
+In order to run the model on twomoons or MNIST datasets, you should first cd to the examples folder and then run:<br>
+```python3 cluster_twomoons.py```<br>
+or<br>
+```python3 cluster_mnist.py```
 
 ### Data reduction and visualization
 
