@@ -71,8 +71,7 @@ spectralreduction = SpectralReduction(
 X_new = spectralreduction.fit_transform(X)
 spectralreduction.visualize(X_new, y, n_components=2) -->
 
-```
-
+<!-- ``` -->
 
 ## Citation
 
@@ -84,7 +83,5 @@ title = {SpectralNet: Spectral Clustering Using Deep Neural Networks},
 booktitle = {Proc. ICLR 2018},
 year = {2018}
 }
-
-```
 
 ```
