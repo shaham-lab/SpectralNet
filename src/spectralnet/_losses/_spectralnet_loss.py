@@ -1,14 +1,17 @@
 import torch
 import torch.nn as nn
 
+
 class SpectralNetLoss(nn.Module):
     def __init__(self):
         super(SpectralNetLoss, self).__init__()
-    
-    def forward(self, W: torch.Tensor, Y: torch.Tensor , is_normalized: bool = False) -> torch.Tensor:
+
+    def forward(
+        self, W: torch.Tensor, Y: torch.Tensor, is_normalized: bool = False
+    ) -> torch.Tensor:
         """
         This function computes the loss of the SpectralNet model.
-        The loss is the rayleigh quotient of the Laplacian matrix obtained from W, 
+        The loss is the rayleigh quotient of the Laplacian matrix obtained from W,
         and the orthonormalized output of the network.
 
         Args:

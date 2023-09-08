@@ -20,7 +20,7 @@ class AETrainer:
         self.patience = self.ae_config["patience"]
         self.architecture = self.ae_config["hiddens"]
         self.batch_size = self.ae_config["batch_size"]
-        self.weights_path = "./weights/ae_weights.pth"
+        self.weights_path = "spectralnet/_trainers/weights/ae_weights.pth"
 
     def train(self, X: torch.Tensor) -> AEModel:
         self.X = X.view(X.size(0), -1)
@@ -71,6 +71,7 @@ class AETrainer:
             )
             t.refresh()
 
+        torch.save(self.ae_net.state_dict(), self.weights_path)
         return self.ae_net
 
     def validate(self, valid_loader: DataLoader) -> float:

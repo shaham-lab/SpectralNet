@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split, TensorDataset
-
+from sklearn.neighbors import kneighbors_graph
 from tqdm import trange
 from spectralnet._utils import *
 from ._trainer import Trainer
@@ -165,8 +165,6 @@ class SpectralTrainer:
 
                 loss = self.criterion(W, Y)
                 valid_loss += loss.item()
-
-        self.counter += 1
 
         valid_loss /= len(valid_loader)
         return valid_loss

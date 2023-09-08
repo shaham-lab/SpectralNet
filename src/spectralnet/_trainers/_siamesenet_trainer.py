@@ -49,7 +49,7 @@ class SiameseTrainer:
         self.architecture = self.siamese_config["hiddens"]
         self.batch_size = self.siamese_config["batch_size"]
         self.use_approx = self.siamese_config["use_approx"]
-        self.weights_path = "./weights/siamese_weights.pth"
+        self.weights_path = "spectralnet/_trainers/weights/siamese_weights.pth"
 
     def train(self, X: torch.Tensor) -> SiameseNetModel:
         self.X = X.view(X.size(0), -1)
@@ -104,6 +104,7 @@ class SiameseTrainer:
             )
             t.refresh()
 
+        torch.save(self.siamese_net.state_dict(), self.weights_path)
         return self.siamese_net
 
     def validate(self, valid_loader: DataLoader) -> float:

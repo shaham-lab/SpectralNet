@@ -19,7 +19,7 @@ class SpectralNetModel(nn.Module):
                 )
             else:
                 self.layers.append(
-                    nn.Sequential(nn.Linear(current_dim, next_dim), nn.ReLU())
+                    nn.Sequential(nn.Linear(current_dim, next_dim), nn.LeakyReLU())
                 )
                 current_dim = next_dim
 

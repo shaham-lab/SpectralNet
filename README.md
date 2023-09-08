@@ -49,12 +49,13 @@ print(f"NMI: {np.round(nmi_score, 3)}")
 You can read the code docs for more information and functionalities<br>
 
 #### Running examples
-In order to run the model on twomoons or MNIST datasets, you should first cd to the examples folder and then run:<br>
-```python3 cluster_twomoons.py```<br>
-or<br>
-```python3 cluster_mnist.py```
 
-### Data reduction and visualization
+In order to run the model on twomoons or MNIST datasets, you should first cd to the examples folder and then run:<br>
+`python3 cluster_twomoons.py`<br>
+or<br>
+`python3 cluster_mnist.py`
+
+<!-- ### Data reduction and visualization
 
 SpectralNet can also be used as an effective and representive data reduction technique, so in case you want to perform data reduction you can do the following:
 
@@ -68,17 +69,22 @@ spectralreduction = SpectralReduction(
 )
 
 X_new = spectralreduction.fit_transform(X)
-spectralreduction.visualize(X_new, y, n_components=2)
+spectralreduction.visualize(X_new, y, n_components=2) -->
+
 ```
 
 
 ## Citation
 
 ```
+
 @inproceedings{shaham2018,
-  author = {Uri Shaham and Kelly Stanton and Henri Li and Boaz Nadler and Ronen Basri and Yuval Kluger},
-  title = {SpectralNet: Spectral Clustering Using Deep Neural Networks},
-  booktitle = {Proc. ICLR 2018},
-  year = {2018}
+author = {Uri Shaham and Kelly Stanton and Henri Li and Boaz Nadler and Ronen Basri and Yuval Kluger},
+title = {SpectralNet: Spectral Clustering Using Deep Neural Networks},
+booktitle = {Proc. ICLR 2018},
+year = {2018}
 }
+
+```
+
 ```

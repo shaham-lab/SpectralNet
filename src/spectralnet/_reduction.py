@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from ._utils import *
 from ._cluster import SpectralNet
 from sklearn.cluster import KMeans
+from ._metrics import Metrics
 
 
 class SpectralReduction:
@@ -151,13 +152,16 @@ class SpectralReduction:
         self.spectral_batch_size = spectral_batch_size
         self.X_new = None
 
-    def _fit(self, X: torch.Tensor) -> np.ndarray:
+    def _fit(self, X: torch.Tensor, y: torch.Tensor) -> np.ndarray:
         """Fit the SpectralNet model to the input data.
 
         Parameters
         ----------
         X : torch.Tensor
             The input data of shape (n_samples, n_features).
+
+        y: torch.Tensor
+            The labels of the input data of shape (n_samples,).
 
         Returns
         -------
@@ -197,7 +201,7 @@ class SpectralReduction:
             spectral_batch_size=self.spectral_batch_size,
         )
 
-        self._spectralnet.fit(X)
+        self._spectralnet.fit(X, y)
 
     def _predict(self, X: torch.Tensor) -> np.ndarray:
         """Predict embeddings for the input data using the fitted SpectralNet model.
@@ -230,7 +234,7 @@ class SpectralReduction:
         """
         return self._predict(X)
 
-    def fit_transform(self, X: torch.Tensor) -> np.ndarray:
+    def fit_transform(self, X: torch.Tensor, y: torch.Tensor = None) -> np.ndarray:
         """Fit the SpectralNet model to the input data and transform it into embeddings.
 
         This is a convenience method that combines the fit and transform steps.
@@ -240,12 +244,15 @@ class SpectralReduction:
         X : torch.Tensor
             The input data of shape (n_samples, n_features).
 
+        y: torch.Tensor
+            The labels of the input data of shape (n_samples,).
+
         Returns
         -------
         np.ndarray
             The fitted and transformed embeddings of shape (n_samples, n_components).
         """
-        self._fit(X)
+        self._fit(X, y)
         return self._transform(X)
 
     def _get_laplacian_of_small_batch(self, batch: torch.Tensor) -> np.ndarray:
@@ -271,7 +278,7 @@ class SpectralReduction:
         return L
 
     def _remove_smallest_eigenvector(self, V: np.ndarray) -> np.ndarray:
-        """Remove the smallest eigenvector from the eigenvectors of the Laplacian of a small batch of the input data.
+        """Remove the constant eigenvector from the eigenvectors of the Laplacian of a small batch of the input data.
 
 
         Parameters
@@ -283,7 +290,7 @@ class SpectralReduction:
         Returns
         -------
         np.ndarray
-            The eigenvectors of the Laplacian of a small batch of the input data without the smallest eigenvector.
+            The eigenvectors of the Laplacian of a small batch of the input data without the constant eigenvector.
         """
 
         batch_raw, batch_encoded = self._spectralnet.get_random_batch()
@@ -293,6 +300,12 @@ class SpectralReduction:
         indices = np.argsort(eigenvalues)
         smallest_index = indices[0]
         V = V[:, np.arange(V.shape[1]) != smallest_index]
+        V = V[
+            :,
+            (np.arange(V.shape[1]) == indices[1])
+            | (np.arange(V.shape[1]) == indices[2]),
+        ]
+
         return V
 
     def visualize(
@@ -302,12 +315,18 @@ class SpectralReduction:
 
         Parameters
         ----------
-        X : torch.Tensor
+        V : torch.Tensor
             The reduced data of shape (n_samples, n_features) to be visualized.
         y : torch.Tensor
             The input labels of shape (n_samples,).
         """
         V = self._remove_smallest_eigenvector(V)
+        print(V.shape)
+
+        plot_laplacian_eigenvectors(V, y)
+        cluster_labels = self._get_clusters_by_kmeans(V)
+        acc = Metrics.acc_score(cluster_labels, y.detach().cpu().numpy(), n_clusters=10)
+        print("acc with 2 components: ", acc)
 
         if n_components > 1:
             x_axis = V[:, 0]
@@ -325,6 +344,24 @@ class SpectralReduction:
         if y is None:
             plt.scatter(x_axis, y_axis)
         else:
-            plt.scatter(x_axis, y_axis, c=y)
+            plt.scatter(x_axis, y_axis, c=y, cmap="tab10", s=3)
 
         plt.show()
+
+    def _get_clusters_by_kmeans(self, embeddings: np.ndarray) -> np.ndarray:
+        """Performs k-means clustering on the spectral-embedding space.
+
+        Parameters
+        ----------
+        embeddings : np.ndarray
+            The spectral-embedding space.
+
+        Returns
+        -------
+        np.ndarray
+            The cluster assignments for the given data.
+        """
+
+        kmeans = KMeans(n_clusters=self.n_components, n_init=10).fit(embeddings)
+        cluster_assignments = kmeans.predict(embeddings)
+        return cluster_assignments

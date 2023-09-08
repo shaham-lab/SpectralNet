@@ -9,3 +9,5 @@ spectralnet.egg-info
 /src/data.py
 /src/reduce_mnist.py
 /src/reduce_twomoons.py
+/src/spectralnet/_reduction.py
+/src/spectralnet/_trainers/weights
