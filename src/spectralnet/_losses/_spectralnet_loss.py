@@ -25,7 +25,7 @@ class SpectralNetLoss(nn.Module):
         m = Y.size(0)
         if is_normalized:
             D = torch.sum(W, dim=1)
-            Y = Y / D[:, None]
+            Y = Y / torch.sqrt(D)[:, None]
 
         Dy = torch.cdist(Y, Y)
         loss = torch.sum(W * Dy.pow(2)) / (2 * m)

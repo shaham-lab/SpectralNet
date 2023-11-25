@@ -62,7 +62,7 @@ def make_batch_for_sparse_grapsh(batch_x: torch.Tensor) -> torch.Tensor:
         x = x.detach().cpu().numpy()
         nn_indices = u.get_nns_by_vector(x, n_neighbors)
         nn_tensors = [u.get_item_vector(i) for i in nn_indices[1:]]
-        nn_tensors = torch.tensor(nn_tensors)
+        nn_tensors = torch.tensor(nn_tensors, device=batch_x.device)
         new_batch_x = torch.cat((new_batch_x, nn_tensors))
 
     return new_batch_x
