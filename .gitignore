@@ -1,6 +1,6 @@
 .DS_Store
 __pycache__
-data
+/data/MNIST
 dist
 spectralnet.egg-info
 /cluster_mnist.py
