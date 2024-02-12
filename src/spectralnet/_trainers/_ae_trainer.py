@@ -20,7 +20,10 @@ class AETrainer:
         self.patience = self.ae_config["patience"]
         self.architecture = self.ae_config["hiddens"]
         self.batch_size = self.ae_config["batch_size"]
+        self.weights_dir = "spectralnet/_trainers/weights"
         self.weights_path = "spectralnet/_trainers/weights/ae_weights.pth"
+        if not os.path.exists(self.weights_dir):
+            os.makedirs(self.weights_dir)
 
     def train(self, X: torch.Tensor) -> AEModel:
         self.X = X.view(X.size(0), -1)
